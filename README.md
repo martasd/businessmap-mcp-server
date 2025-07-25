@@ -27,9 +27,17 @@ A Model Context Protocol (MCP) server for integrating BusinessMap (formerly Kanb
 
 ### 1. Install Dependencies
 
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
+
 ```bash
 cd businessmap-mcp-server
-pip install -r requirements.txt
+uv sync
+```
+
+Alternatively, run the setup script:
+
+```bash
+./setup.sh
 ```
 
 ### 2. Set Environment Variables
@@ -50,7 +58,7 @@ BUSINESSMAP_API_KEY=your-api-key-here
 ### 3. Test the Server
 
 ```bash
-python businessmap_mcp_server.py
+uv run python businessmap_mcp_server.py
 ```
 
 ## Claude Code Integration
@@ -138,9 +146,8 @@ This server uses BusinessMap's REST API v2. The following endpoints are supporte
 Enable debug logging:
 
 ```bash
-export PYTHONPATH=/path/to/businessmap-mcp-server
 export LOG_LEVEL=DEBUG
-python businessmap_mcp_server.py
+uv run python businessmap_mcp_server.py
 ```
 
 ## Contributing

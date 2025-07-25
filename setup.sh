@@ -12,15 +12,9 @@ if ! command -v uv &> /dev/null; then
     export PATH="$HOME/.cargo/bin:$PATH"
 fi
 
-# Initialize uv project
-echo "Initializing uv project..."
-uv init --no-readme
-
-# Add dependencies
-echo "Adding dependencies..."
-uv add "mcp>=1.0.0"
-uv add "requests>=2.31.0" 
-uv add "pydantic>=2.0.0"
+# Install dependencies
+echo "Installing dependencies..."
+uv sync
 
 echo "Setup complete!"
 echo ""
