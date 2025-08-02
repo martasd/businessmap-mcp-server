@@ -9,6 +9,14 @@ A Model Context Protocol (MCP) server for integrating BusinessMap (formerly Kanb
 - **User Management**: List team members
 - **Search Capabilities**: Find cards by title across boards
 
+## Architecture
+
+The server is organized into separate modules for maintainability:
+
+- `businessmap_client.py` - BusinessMap API client
+- `businessmap_tools.py` - MCP tool implementations
+- `businessmap_mcp_server.py` - Main server entry point
+
 ## Available Tools
 
 ### Information Tools

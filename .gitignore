@@ -1,1 +1,4 @@
 claude-code-config.json
+.env
+__pycache__/
+*.pyc
