@@ -49,10 +49,32 @@ class BusinessMapClient:
         result = self._make_request("GET", "/cards", params=params)
         return result.get("data", {})
     
+    def get_user_cards(self, user_id: int, board_id: Optional[int] = None, column_id: Optional[int] = None, limit: int = 50) -> Dict[str, Any]:
+        """Get cards assigned to a specific user"""
+        params = {
+            "limit": limit,
+            "owner_user_ids": user_id
+        }
+        if board_id:
+            params["board_id"] = board_id
+        if column_id:
+            params["column_ids"] = column_id
+        
+        result = self._make_request("GET", "/cards", params=params)
+        return result.get("data", {})
+    
     def get_card(self, card_id: int) -> Dict[str, Any]:
         """Get detailed information about a specific card"""
         result = self._make_request("GET", f"/cards/{card_id}")
-        return result.get("data", {})
+        card_data = result.get("data", {})
+        
+        # Add URL to the card data
+        if card_data and "board_id" in card_data:
+            board_id = card_data["board_id"]
+            subdomain = self.base_url.split("//")[1].split(".")[0]
+            card_data["url"] = f"https://{subdomain}.kanbanize.com/ctrl_board/{board_id}/cards/{card_id}/details/"
+        
+        return card_data
     
     def search_cards(self, query: str, board_id: Optional[int] = None, limit: int = 20) -> List[Dict[str, Any]]:
         """Search cards by title or description"""

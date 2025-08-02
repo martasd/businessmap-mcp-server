@@ -144,3 +144,20 @@ def register_tools(mcp: FastMCP) -> None:
         except Exception as e:
             logger.error(f"Error updating card: {e}")
             return f"Error: {e}"
+
+    @mcp.tool()
+    def get_user_cards(user_id: int, board_id: int = None, column_id: int = None, limit: int = 50) -> str:
+        """Get cards assigned to a specific user
+        
+        Args:
+            user_id: The ID of the user whose cards to retrieve
+            board_id: Optional board ID to limit search to specific board
+            column_id: Optional column ID to limit search to specific column
+            limit: Maximum number of cards to return (default: 50)
+        """
+        try:
+            cards_data = get_client().get_user_cards(user_id, board_id, column_id, limit)
+            return json.dumps(cards_data, indent=2)
+        except Exception as e:
+            logger.error(f"Error getting user cards: {e}")
+            return f"Error: {e}"
