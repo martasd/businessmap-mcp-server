@@ -10,6 +10,8 @@ from typing import List, Dict, Any, Optional
 
 import requests
 
+from businessmap_types import CardTemplate
+
 logger = logging.getLogger(__name__)
 
 
@@ -101,8 +103,24 @@ class BusinessMapClient:
         result = self._make_request("GET", "/users")
         return result.get("data", [])
     
-    def create_card(self, board_id: int, title: str, description: str = "", **kwargs) -> Dict[str, Any]:
-        """Create a new card"""
+    @staticmethod
+    def get_card_template(template_type: CardTemplate) -> str:
+        """Get card template based on type"""
+        templates = {
+            CardTemplate.FEATURE: """<p><span class="text-big">Feature set:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Testing scenarios / Acceptance criteria:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Deployment:</span></p><ul><li>&nbsp;</li></ul><p>&nbsp;</p>""",
+            
+            CardTemplate.BUG: """<p><span class="text-big">Current Behavior:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Expected Behavior:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">How to reproduce</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Deployment:</span></p><ul><li>&nbsp;</li></ul><p>&nbsp;</p>""",
+            
+            CardTemplate.SUPPORT: """<p><span class="text-big">Feature set:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Testing scenarios / Acceptance criteria:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Related sources:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Deployment:</span></p><ul><li>&nbsp;</li></ul><p>&nbsp;</p>"""
+        }
+        
+        return templates.get(template_type, "")
+
+    def create_card(self, board_id: int, title: str, description: str = "", template: CardTemplate = None, **kwargs) -> Dict[str, Any]:
+        """Create a new card with optional template"""
+        if template and not description:
+            description = self.get_card_template(template)
+        
         data = {
             "board_id": board_id,
             "title": title,

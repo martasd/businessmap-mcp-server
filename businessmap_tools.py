@@ -11,6 +11,7 @@ from typing import Optional
 from mcp.server.fastmcp import FastMCP
 
 from businessmap_client import create_client, BusinessMapClient
+from businessmap_types import CardTemplate
 
 logger = logging.getLogger(__name__)
 
@@ -105,16 +106,17 @@ def register_tools(mcp: FastMCP) -> None:
             return f"Error: {e}"
 
     @mcp.tool()
-    def create_card(board_id: int, title: str, description: str = "") -> str:
+    def create_card(board_id: int, title: str, description: str = "", template_type: CardTemplate = None) -> str:
         """Create a new card in BusinessMap
         
         Args:
             board_id: The ID of the board where the card should be created
             title: The title of the card
             description: Optional description for the card
+            template_type: Optional template type (feature, bug, support) - will use template if description is empty
         """
         try:
-            card = get_client().create_card(board_id, title, description)
+            card = get_client().create_card(board_id, title, description, template_type)
             return json.dumps(card, indent=2)
         except Exception as e:
             logger.error(f"Error creating card: {e}")
