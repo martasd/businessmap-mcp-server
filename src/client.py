@@ -10,7 +10,7 @@ from typing import List, Dict, Any, Optional
 
 import requests
 
-from .businessmap_types import CardTemplate
+from .types import CardTemplate
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +120,7 @@ class BusinessMapClient:
 
     def create_card(self, board_id: int, title: str, template: CardTemplate, description: str, column_id: int = 37,
                     **kwargs) -> Dict[str, Any]:
-        """Create a new card with template"""
+        """Create a new card with a template"""
         final_description = self.get_template_embedded_description(template, description)
         
         data = {
@@ -130,8 +130,13 @@ class BusinessMapClient:
             "column_id": column_id,
             **kwargs
         }
-        result = self._make_request("POST", "/cards", json=data)
-        return result.get("data", {})
+        response = self._make_request("POST", "/cards", json=data)
+        result = response.get("data")
+
+        if result:
+            return result[0]
+        return {}
+
     
     def update_card(self, card_id: int, **kwargs) -> Dict[str, Any]:
         """Update an existing card"""

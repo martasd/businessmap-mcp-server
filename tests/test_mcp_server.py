@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import pytest
-import os
 from dotenv import load_dotenv
-from src.businessmap_client import create_client
-from src.businessmap_types import CardTemplate
+from src.client import create_client
+from src.types import CardTemplate
 
 @pytest.fixture
 def client():
@@ -75,8 +74,10 @@ def test_search_cards(client):
     matching_cards = client.search_cards("test", board_id=3, limit=5)
     assert isinstance(matching_cards, list)
 
+@pytest.mark.skip(reason="We don't want to create cards in the test suite")
 def test_create_card(client):
     """Test the create_card method"""
+
     # Test creating a feature card
     new_card = client.create_card(
         board_id=3,  # Development board
