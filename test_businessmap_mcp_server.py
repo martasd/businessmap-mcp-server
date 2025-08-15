@@ -6,6 +6,7 @@ Test script for BusinessMap API client using refactored modules
 import os
 from dotenv import load_dotenv
 from businessmap_client import create_client
+from businessmap_types import CardTemplate
 
 def test_connection():
     """Test the API connection using the refactored client"""
@@ -71,6 +72,41 @@ def test_connection():
         print(f"❌ Connection failed: {e}")
         return False
 
+def test_create_card():
+    """Test the create_card method"""
+    try:
+        # Load environment variables from .env file
+        load_dotenv()
+        
+        print("Creating BusinessMap client...")
+        client = create_client()
+
+        # Test creating a feature card
+        print("\nTesting create_card with FEATURE template...")
+        new_card = client.create_card(
+            board_id=3,  # Development board
+            title="Test Feature Card",
+            template=CardTemplate.FEATURE,
+            description="This is a test feature description",
+            lane_id=12
+        )
+        print(f"✅ Feature card created successfully! Card ID: {new_card.get('card_id')}")
+        
+        # Verify the card was created by fetching its details
+        if new_card and 'card_id' in new_card:
+            card_details = client.get_card(new_card['card_id'])
+            print(f"✅ Card verification: {card_details.get('title', 'N/A')}")
+        
+        return True
+    except Exception as e:
+        print(f"❌ create_card test failed: {e}")
+        return False
+
 if __name__ == "__main__":
     print("Testing BusinessMap API connection...")
-    test_connection()
+    connection_success = test_connection()
+    
+    if connection_success:
+        print("\n" + "="*50)
+        print("Testing create_card method...")
+        test_create_card()

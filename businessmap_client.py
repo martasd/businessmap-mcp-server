@@ -29,6 +29,8 @@ class BusinessMapClient:
         """Make HTTP request to BusinessMap API"""
         url = f"{self.base_url}{endpoint}"
         response = requests.request(method, url, headers=self.headers, **kwargs)
+        if not response.ok:
+            logger.error(f"Request failed: {response.status_code} {response.text}")
         response.raise_for_status()
         return response.json()
     
@@ -104,27 +106,28 @@ class BusinessMapClient:
         return result.get("data", [])
     
     @staticmethod
-    def get_card_template(template_type: CardTemplate) -> str:
-        """Get card template based on type"""
+    def get_template_embedded_description(template_type: CardTemplate, description: str) -> str:
+        """Get card template based on type with description incorporated"""
         templates = {
-            CardTemplate.FEATURE: """<p><span class="text-big">Feature set:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Testing scenarios / Acceptance criteria:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Deployment:</span></p><ul><li>&nbsp;</li></ul><p>&nbsp;</p>""",
+            CardTemplate.FEATURE: f"""<p><span class="text-big">Feature set:</span></p><ul><li>{description}&nbsp;</li></ul><p><span class="text-big">Testing scenarios / Acceptance criteria:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Deployment:</span></p><ul><li>&nbsp;</li></ul><p>&nbsp;</p>""",
             
-            CardTemplate.BUG: """<p><span class="text-big">Current Behavior:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Expected Behavior:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">How to reproduce</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Deployment:</span></p><ul><li>&nbsp;</li></ul><p>&nbsp;</p>""",
+            CardTemplate.BUG: f"""<p><span class="text-big">Current Behavior:</span>{description}</p><ul><li>&nbsp;</li></ul><p><span class="text-big">Expected Behavior:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">How to reproduce</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Deployment:</span></p><ul><li>&nbsp;</li></ul><p>&nbsp;</p>""",
             
-            CardTemplate.SUPPORT: """<p><span class="text-big">Feature set:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Testing scenarios / Acceptance criteria:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Related sources:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Deployment:</span></p><ul><li>&nbsp;</li></ul><p>&nbsp;</p>"""
+            CardTemplate.SUPPORT: f"""<p><span class="text-big">Feature set:</span>{description}</p><ul><li>&nbsp;</li></ul><p><span class="text-big">Testing scenarios / Acceptance criteria:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Related sources:</span></p><ul><li>&nbsp;</li></ul><p><span class="text-big">Deployment:</span></p><ul><li>&nbsp;</li></ul><p>&nbsp;</p>"""
         }
         
         return templates.get(template_type, "")
 
-    def create_card(self, board_id: int, title: str, description: str = "", template: CardTemplate = None, **kwargs) -> Dict[str, Any]:
-        """Create a new card with optional template"""
-        if template and not description:
-            description = self.get_card_template(template)
+    def create_card(self, board_id: int, title: str, template: CardTemplate, description: str, column_id: int = 37,
+                    **kwargs) -> Dict[str, Any]:
+        """Create a new card with template"""
+        final_description = self.get_template_embedded_description(template, description)
         
         data = {
             "board_id": board_id,
             "title": title,
-            "description": description,
+            "description": final_description,
+            "column_id": column_id,
             **kwargs
         }
         result = self._make_request("POST", "/cards", json=data)

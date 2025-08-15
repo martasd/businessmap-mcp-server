@@ -6,7 +6,9 @@
       "Bash(find:*)",
       "Bash(ls:*)",
       "Bash(claude-code --help)",
-      "Bash(uv sync:*)"
+      "Bash(uv sync:*)",
+      "mcp__businessmap__list_boards",
+      "mcp__businessmap__get_board_cards"
     ],
     "deny": []
   }
