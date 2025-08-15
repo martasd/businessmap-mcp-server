@@ -8,7 +8,8 @@
       "Bash(claude-code --help)",
       "Bash(uv sync:*)",
       "mcp__businessmap__list_boards",
-      "mcp__businessmap__get_board_cards"
+      "mcp__businessmap__get_board_cards",
+      "Bash(uv run:*)"
     ],
     "deny": []
   }

@@ -10,7 +10,7 @@ from typing import List, Dict, Any, Optional
 
 import requests
 
-from businessmap_types import CardTemplate
+from .businessmap_types import CardTemplate
 
 logger = logging.getLogger(__name__)
 

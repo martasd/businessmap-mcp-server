@@ -10,8 +10,8 @@ from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
-from businessmap_client import create_client, BusinessMapClient
-from businessmap_types import CardTemplate
+from .businessmap_client import create_client, BusinessMapClient
+from .businessmap_types import CardTemplate
 
 logger = logging.getLogger(__name__)
 
