@@ -29,9 +29,12 @@ class BusinessMapClient:
         """Make HTTP request to BusinessMap API"""
         url = f"{self.base_url}{endpoint}"
         response = requests.request(method, url, headers=self.headers, **kwargs)
+
         if not response.ok:
             logger.error(f"Request failed: {response.status_code} {response.text}")
+
         response.raise_for_status()
+
         return response.json()
     
     def get_workspaces(self) -> List[Dict[str, Any]]:
@@ -105,6 +108,11 @@ class BusinessMapClient:
         result = self._make_request("GET", "/users")
         return result.get("data", [])
     
+    def get_current_user(self) -> Dict[str, Any]:
+        """Get current user information"""
+        result = self._make_request("GET", "/users/me")
+        return result.get("data", {})
+    
     @staticmethod
     def get_template_embedded_description(template_type: CardTemplate, description: str) -> str:
         """Get card template based on type with description incorporated"""
@@ -118,16 +126,33 @@ class BusinessMapClient:
         
         return templates.get(template_type, "")
 
-    def create_card(self, board_id: int, title: str, template: CardTemplate, description: str, column_id: int = 37,
-                    **kwargs) -> Dict[str, Any]:
-        """Create a new card with a template"""
+    def create_card(self, template: CardTemplate, title: str, description: str, board_id: int = 3, column_id: int = 37,
+                    owner_user_id: Optional[int] = None, **kwargs) -> Dict[str, Any]:
+        """
+        Create a new card.
+
+        Args:
+            template (CardTemplate): The template to embed into the card's description.
+            title (str): The title of the new card.
+            description (str): The description content for the new card.
+            board_id (int, optional): The ID of the board where the card will be created. Default is Development.
+            column_id (int, optional): The ID of the column under which the card is created. Default is Ready for Development.
+            owner_user_id (int, optional): The ID of the user who will own the card. If None, uses current user.
+
+        """
         final_description = self.get_template_embedded_description(template, description)
         
+        # If no owner_user_id is provided, use the current user
+        if owner_user_id is None:
+            current_user = self.get_current_user()
+            owner_user_id = current_user.get("user_id")
+        
         data = {
-            "board_id": board_id,
             "title": title,
             "description": final_description,
+            "board_id": board_id,
             "column_id": column_id,
+            "owner_user_id": owner_user_id,
             **kwargs
         }
         response = self._make_request("POST", "/cards", json=data)

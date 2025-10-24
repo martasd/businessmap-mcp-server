@@ -106,17 +106,16 @@ def register_tools(mcp: FastMCP) -> None:
             return f"Error: {e}"
 
     @mcp.tool()
-    def create_card(board_id: int, title: str, template_type: CardTemplate, description: str) -> str:
+    def create_card(template_type: CardTemplate, title: str, description: str) -> str:
         """Create a new card in BusinessMap
         
         Args:
-            board_id: The ID of the board where the card should be created
+            template_type: feature, bug, or support
             title: The title of the card
-            template_type: Template type (feature, bug, support)
             description: Description for the card
         """
         try:
-            card = get_client().create_card(board_id, title, template_type, description)
+            card = get_client().create_card(template_type, title, description)
             return json.dumps(card, indent=2)
         except Exception as e:
             logger.error(f"Error creating card: {e}")
