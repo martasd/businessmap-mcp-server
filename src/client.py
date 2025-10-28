@@ -146,6 +146,8 @@ class BusinessMapClient:
         if owner_user_id is None:
             current_user = self.get_current_user()
             owner_user_id = current_user.get("user_id")
+            if owner_user_id is None:
+                raise ValueError("Failed to retrieve current user ID")
         
         data = {
             "title": title,
