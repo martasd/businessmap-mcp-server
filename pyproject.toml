@@ -10,3 +10,33 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "pytest>=7.0.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.2",
+]
+
+[tool.ruff]
+fix = true
+show-fixes = true
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "double"
+line-ending = "lf"
+
+[tool.ruff.lint]
+select = [
+    # flake8-bugbear
+    "B",
+    # docstrings
+    "E",
+    # Pyflakes
+    "F",
+    # isort
+    "I",
+    # bandit
+    # "S",
+    # pyupgrade
+    "UP",
+]
