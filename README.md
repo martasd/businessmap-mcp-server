@@ -28,7 +28,7 @@ The server is organized into separate modules for maintainability:
 - `search_cards(query, board_id=None, limit=20)` - Search cards by title
 
 ### Management Tools
-- `create_card(board_id, title, description="")` - Create new cards
+- `create_card(template_type, title, description="")` - Create new cards
 - `update_card(card_id, title=None, description=None)` - Update existing cards
 
 ## Setup

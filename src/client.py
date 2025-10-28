@@ -14,6 +14,9 @@ from .types import CardTemplate
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_BOARD_ID = 3  # Development board
+DEFAULT_COLUMN_ID = 37  # Ready for Development column
+
 
 class BusinessMapClient:
     """Client for interacting with BusinessMap API"""
@@ -126,7 +129,8 @@ class BusinessMapClient:
         
         return templates.get(template_type, "")
 
-    def create_card(self, template: CardTemplate, title: str, description: str, board_id: int = 3, column_id: int = 37,
+    def create_card(self, template: CardTemplate, title: str, description: str,
+                    board_id: int = DEFAULT_BOARD_ID, column_id: int = DEFAULT_COLUMN_ID,
                     owner_user_id: Optional[int] = None, **kwargs) -> Dict[str, Any]:
         """
         Create a new card.
@@ -142,7 +146,6 @@ class BusinessMapClient:
         """
         final_description = self.get_template_embedded_description(template, description)
         
-        # If no owner_user_id is provided, use the current user
         if owner_user_id is None:
             current_user = self.get_current_user()
             owner_user_id = current_user.get("user_id")
