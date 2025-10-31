@@ -105,16 +105,24 @@ def register_tools(mcp: FastMCP) -> None:
             return f"Error: {e}"
 
     @mcp.tool()
-    def create_card(template_type: CardTemplate, title: str, description: str) -> str:
+    def create_card(template_type: CardTemplate, title: str, description: str, user_id: int | None) -> str:
         """Create a new card in BusinessMap
         
         Args:
             template_type: feature, bug, or support
             title: The title of the card
             description: Description for the card
+            user_id: The ID of the user to assign the card to (optional)
         """
         try:
-            card = get_client().create_card(template_type, title, description)
+            client = get_client()
+            if user_id is None:
+                current_user = client.get_current_user()
+                user_id = current_user.get("user_id")
+                if user_id is None:
+                    raise ValueError("Failed to retrieve current user ID")
+
+            card = client.create_card(template_type, title, description, user_id)
             return json.dumps(card, indent=2)
         except Exception as e:
             logger.error(f"Error creating card: {e}")
@@ -146,17 +154,24 @@ def register_tools(mcp: FastMCP) -> None:
             return f"Error: {e}"
 
     @mcp.tool()
-    def get_user_cards(user_id: int, board_id: int = None, column_id: int = None, limit: int = 50) -> str:
+    def get_user_cards(user_id: int | None = None, board_id: int = None, column_id: int = None, limit: int = 50) -> str:
         """Get cards assigned to a specific user
         
         Args:
-            user_id: The ID of the user whose cards to retrieve
+            user_id: The ID of the user whose cards to retrieve (if not provided, uses current user)
             board_id: Optional board ID to limit search to specific board
             column_id: Optional column ID to limit search to specific column
             limit: Maximum number of cards to return (default: 50)
         """
         try:
-            cards_data = get_client().get_user_cards(user_id, board_id, column_id, limit)
+            client = get_client()
+            if user_id is None:
+                current_user = client.get_current_user()
+                user_id = current_user.get("user_id")
+                if user_id is None:
+                    return "Error: Failed to retrieve current user ID"
+            
+            cards_data = client.get_user_cards(user_id, board_id, column_id, limit)
             return json.dumps(cards_data, indent=2)
         except Exception as e:
             logger.error(f"Error getting user cards: {e}")

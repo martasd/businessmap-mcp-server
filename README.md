@@ -1,6 +1,6 @@
 # BusinessMap MCP Server
 
-A Model Context Protocol (MCP) server for integrating BusinessMap (formerly Kanbanize) with Claude Code and other MCP-compatible applications.
+A Model Context Protocol (MCP) server for integrating BusinessMap (formerly Kanbanize) with MCP-compatible applications.
 
 ## Features
 
