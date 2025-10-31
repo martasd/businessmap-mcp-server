@@ -109,7 +109,7 @@ class BusinessMapClient:
 
     def get_current_user(self) -> dict[str, Any]:
         """Get current user information"""
-        result = self._make_request("GET", "/users/me")
+        result = self._make_request("GET", "/me")
         return result.get("data", {})
 
     @staticmethod
@@ -128,9 +128,9 @@ class BusinessMapClient:
         template: CardTemplate,
         title: str,
         description: str,
+        owner_user_id: int | None = None,
         board_id: int = DEFAULT_BOARD_ID,
         column_id: int = DEFAULT_COLUMN_ID,
-        owner_user_id: int | None = None,
         **kwargs,
     ) -> dict[str, Any]:
         """
@@ -147,12 +147,6 @@ class BusinessMapClient:
         """
         final_description = self.get_template_embedded_description(template, description)
 
-        if owner_user_id is None:
-            current_user = self.get_current_user()
-            owner_user_id = current_user.get("user_id")
-            if owner_user_id is None:
-                raise ValueError("Failed to retrieve current user ID")
-
         data = {
             "title": title,
             "description": final_description,
@@ -161,6 +155,7 @@ class BusinessMapClient:
             "owner_user_id": owner_user_id,
             **kwargs,
         }
+
         response = self._make_request("POST", "/cards", json=data)
         result = response.get("data")
 
