@@ -29,7 +29,7 @@ line-ending = "lf"
 select = [
     # flake8-bugbear
     "B",
-    # docstrings
+    # pycodestyle (errors)
     "E",
     # Pyflakes
     "F",
