@@ -1,5 +1,5 @@
 """
-BusinessMap Types
+BusinessMap Card Types
 
 Shared type definitions for BusinessMap MCP server.
 """
