@@ -6,17 +6,16 @@ MCP tool functions for interacting with BusinessMap API.
 
 import json
 import logging
-from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
-from .client import create_client, BusinessMapClient
+from .client import BusinessMapClient, create_client
 from .types import CardTemplate
 
 logger = logging.getLogger(__name__)
 
 # Global client instance (lazily initialized)
-_client: Optional[BusinessMapClient] = None
+_client: BusinessMapClient | None = None
 
 
 def get_client() -> BusinessMapClient:
