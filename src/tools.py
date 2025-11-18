@@ -75,7 +75,7 @@ def register_tools(mcp: FastMCP) -> None:
             return f"Error: {e}"
 
     @mcp.tool()
-    def get_user_cards(user_id: int | None = None, board_id: int = None, column_id: int = None, limit: int = 50) -> str:
+    def get_user_cards(user_id: int | None = None, board_id: int | None = None, column_id: int | None = None, limit: int = 50) -> str:
         """Get cards assigned to a specific user
 
         Args:
