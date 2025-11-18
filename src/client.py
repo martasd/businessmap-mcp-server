@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_BOARD_ID = 3  # Development board
 DEFAULT_COLUMN_ID = 37  # Ready for Development column
+DEFAULT_TAG_ID = 98 # Add Python by default
 
 
 class BusinessMapClient:
@@ -129,6 +130,7 @@ class BusinessMapClient:
         title: str,
         description: str,
         owner_user_id: int | None = None,
+        tag_ids: list[int] | None = None,
         board_id: int = DEFAULT_BOARD_ID,
         column_id: int = DEFAULT_COLUMN_ID,
         **kwargs,
@@ -143,8 +145,12 @@ class BusinessMapClient:
             board_id (int, optional): The ID of the board where the card will be created. Default is Development.
             column_id (int, optional): The ID of the column under which the card is created. Default is Ready for Development.
             owner_user_id (int, optional): The ID of the user who will own the card. If None, uses the current user.
+            tag_ids (list[int], optional): A list of tag IDs to add to the card. Default is the Python tag.
 
         """
+        if tag_ids is None:
+            tag_ids = [DEFAULT_TAG_ID]
+
         final_description = self.get_template_embedded_description(template, description)
 
         data = {
@@ -153,6 +159,7 @@ class BusinessMapClient:
             "board_id": board_id,
             "column_id": column_id,
             "owner_user_id": owner_user_id,
+            "tag_ids_to_add": tag_ids,
             **kwargs,
         }
 

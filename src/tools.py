@@ -28,7 +28,7 @@ def get_client() -> BusinessMapClient:
 
 def register_tools(mcp: FastMCP) -> None:
     """Register all BusinessMap tools with the MCP server"""
-    
+
     @mcp.tool()
     def list_workspaces() -> str:
         """List all BusinessMap workspaces"""
@@ -50,9 +50,19 @@ def register_tools(mcp: FastMCP) -> None:
             return f"Error: {e}"
 
     @mcp.tool()
+    def list_users() -> str:
+        """List all BusinessMap users"""
+        try:
+            users = get_client().get_users()
+            return json.dumps(users, indent=2)
+        except Exception as e:
+            logger.error(f"Error listing users: {e}")
+            return f"Error: {e}"
+
+    @mcp.tool()
     def get_board_cards(board_id: int, limit: int = 50) -> str:
         """Get cards from a specific board
-        
+
         Args:
             board_id: The ID of the board
             limit: Maximum number of cards to return (default: 50)
@@ -65,9 +75,33 @@ def register_tools(mcp: FastMCP) -> None:
             return f"Error: {e}"
 
     @mcp.tool()
+    def get_user_cards(user_id: int | None = None, board_id: int | None = None, column_id: int | None = None, limit: int = 50) -> str:
+        """Get cards assigned to a specific user
+
+        Args:
+            user_id: The ID of the user whose cards to retrieve (if not provided, uses the current user)
+            board_id: Optional board ID to limit search to specific board
+            column_id: Optional column ID to limit search to specific column
+            limit: Maximum number of cards to return (default: 50)
+        """
+        try:
+            client = get_client()
+            if user_id is None:
+                current_user = client.get_current_user()
+                user_id = current_user.get("user_id")
+                if user_id is None:
+                    return "Error: Failed to retrieve current user ID"
+
+            cards_data = client.get_user_cards(user_id, board_id, column_id, limit)
+            return json.dumps(cards_data, indent=2)
+        except Exception as e:
+            logger.error(f"Error getting user cards: {e}")
+            return f"Error: {e}"
+
+    @mcp.tool()
     def get_card_details(card_id: int) -> str:
         """Get detailed information about a specific card
-        
+
         Args:
             card_id: The ID of the card
         """
@@ -81,7 +115,7 @@ def register_tools(mcp: FastMCP) -> None:
     @mcp.tool()
     def search_cards(query: str, board_id: int = None, limit: int = 20) -> str:
         """Search for cards by title
-        
+
         Args:
             query: Search query string
             board_id: Optional board ID to limit search to specific board
@@ -95,24 +129,17 @@ def register_tools(mcp: FastMCP) -> None:
             return f"Error: {e}"
 
     @mcp.tool()
-    def list_users() -> str:
-        """List all BusinessMap users"""
-        try:
-            users = get_client().get_users()
-            return json.dumps(users, indent=2)
-        except Exception as e:
-            logger.error(f"Error listing users: {e}")
-            return f"Error: {e}"
-
-    @mcp.tool()
-    def create_card(template_type: CardTemplate, title: str, description: str, user_id: int | None) -> str:
+    def create_card(
+        template_type: CardTemplate, title: str, description: str, user_id: int | None, tag_ids: list[int] | None
+    ) -> str:
         """Create a new card in BusinessMap
-        
+
         Args:
             template_type: feature, bug, or support
             title: The title of the card
             description: Description for the card
             user_id: The ID of the user to assign the card to (optional)
+            tag_ids: List of tag IDs to assign to the card (optional)
         """
         try:
             client = get_client()
@@ -122,7 +149,7 @@ def register_tools(mcp: FastMCP) -> None:
                 if user_id is None:
                     raise ValueError("Failed to retrieve current user ID")
 
-            card = client.create_card(template_type, title, description, user_id)
+            card = client.create_card(template_type, title, description, user_id, tag_ids)
             return json.dumps(card, indent=2)
         except Exception as e:
             logger.error(f"Error creating card: {e}")
@@ -131,7 +158,7 @@ def register_tools(mcp: FastMCP) -> None:
     @mcp.tool()
     def update_card(card_id: int, title: str = None, description: str = None) -> str:
         """Update an existing card in BusinessMap
-        
+
         Args:
             card_id: The ID of the card to update
             title: New title for the card (optional)
@@ -143,36 +170,12 @@ def register_tools(mcp: FastMCP) -> None:
                 updates["title"] = title
             if description is not None:
                 updates["description"] = description
-            
+
             if not updates:
                 return "Error: No updates provided"
-            
+
             card = get_client().update_card(card_id, **updates)
             return json.dumps(card, indent=2)
         except Exception as e:
             logger.error(f"Error updating card: {e}")
-            return f"Error: {e}"
-
-    @mcp.tool()
-    def get_user_cards(user_id: int | None = None, board_id: int = None, column_id: int = None, limit: int = 50) -> str:
-        """Get cards assigned to a specific user
-        
-        Args:
-            user_id: The ID of the user whose cards to retrieve (if not provided, uses current user)
-            board_id: Optional board ID to limit search to specific board
-            column_id: Optional column ID to limit search to specific column
-            limit: Maximum number of cards to return (default: 50)
-        """
-        try:
-            client = get_client()
-            if user_id is None:
-                current_user = client.get_current_user()
-                user_id = current_user.get("user_id")
-                if user_id is None:
-                    return "Error: Failed to retrieve current user ID"
-            
-            cards_data = client.get_user_cards(user_id, board_id, column_id, limit)
-            return json.dumps(cards_data, indent=2)
-        except Exception as e:
-            logger.error(f"Error getting user cards: {e}")
             return f"Error: {e}"
