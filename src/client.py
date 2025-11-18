@@ -130,9 +130,9 @@ class BusinessMapClient:
         title: str,
         description: str,
         owner_user_id: int | None = None,
+        tag_ids: list[int] = None,
         board_id: int = DEFAULT_BOARD_ID,
         column_id: int = DEFAULT_COLUMN_ID,
-        tag_ids: list[int] = None,
         **kwargs,
     ) -> dict[str, Any]:
         """
