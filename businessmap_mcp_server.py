@@ -21,9 +21,15 @@ mcp = FastMCP("BusinessMap")
 
 register_tools(mcp)
 
-if __name__ == "__main__":
+
+def main():
     if not os.getenv("BUSINESSMAP_SUBDOMAIN") or not os.getenv("BUSINESSMAP_API_KEY"):
         print("Error: BUSINESSMAP_SUBDOMAIN and BUSINESSMAP_API_KEY environment variables must be set")
         sys.exit(1)
 
+    logger.info("Starting BusinessMap MCP server")
     mcp.run()
+
+
+if __name__ == "__main__":
+    main()
