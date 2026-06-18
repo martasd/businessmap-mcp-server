@@ -130,12 +130,11 @@ def register_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     def create_card(
-        template_type: CardTemplate, title: str, description: str, user_id: int | None, tag_ids: list[int] | None
+        title: str, description: str, user_id: int | None, tag_ids: list[int] | None
     ) -> str:
         """Create a new card in BusinessMap
 
         Args:
-            template_type: feature, bug, or support
             title: The title of the card
             description: Description for the card
             user_id: The ID of the user to assign the card to (optional)
@@ -149,7 +148,7 @@ def register_tools(mcp: FastMCP) -> None:
                 if user_id is None:
                     raise ValueError("Failed to retrieve current user ID")
 
-            card = client.create_card(template_type, title, description, user_id, tag_ids)
+            card = client.create_card(title, description, user_id, tag_ids)
             return json.dumps(card, indent=2)
         except Exception as e:
             logger.error(f"Error creating card: {e}")

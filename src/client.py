@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_BOARD_ID = 3  # Development board
 DEFAULT_COLUMN_ID = 37  # Ready for Development column
 DEFAULT_TAG_ID = 98 # Add Python by default
+DEFAULT_LANE_ID = 12 # BRIGHTSCRIP lane
 
 
 class BusinessMapClient:
@@ -126,12 +127,12 @@ class BusinessMapClient:
 
     def create_card(
         self,
-        template: CardTemplate,
         title: str,
         description: str,
         owner_user_id: int | None = None,
         tag_ids: list[int] | None = None,
         board_id: int = DEFAULT_BOARD_ID,
+        lane_id: int = DEFAULT_LANE_ID,
         column_id: int = DEFAULT_COLUMN_ID,
         **kwargs,
     ) -> dict[str, Any]:
@@ -139,10 +140,10 @@ class BusinessMapClient:
         Create a new card.
 
         Args:
-            template (CardTemplate): The template to embed into the card's description.
             title (str): The title of the new card.
-            description (str): The description content for the new card.
+            description (str): The description html for the new card.
             board_id (int, optional): The ID of the board where the card will be created. Default is Development.
+            lane_id (int, optional): The ID of the lane where the card will be created. Default is BRIGHTSCRIP.
             column_id (int, optional): The ID of the column under which the card is created. Default is Ready for Development.
             owner_user_id (int, optional): The ID of the user who will own the card. If None, uses the current user.
             tag_ids (list[int], optional): A list of tag IDs to add to the card. Default is the Python tag.
@@ -151,12 +152,12 @@ class BusinessMapClient:
         if tag_ids is None:
             tag_ids = [DEFAULT_TAG_ID]
 
-        final_description = self.get_template_embedded_description(template, description)
 
         data = {
             "title": title,
-            "description": final_description,
+            "description": description,
             "board_id": board_id,
+            "lane_id": lane_id,
             "column_id": column_id,
             "owner_user_id": owner_user_id,
             "tag_ids_to_add": tag_ids,

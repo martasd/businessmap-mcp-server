@@ -2,14 +2,29 @@
 
 import pytest
 from dotenv import load_dotenv
+
+import businessmap_mcp_server
 from src.client import create_client
 from src.types import CardTemplate
+
 
 @pytest.fixture
 def client():
     """Create and return a BusinessMap client fixture"""
     load_dotenv()
     return create_client()
+
+
+def test_main_logs_when_server_starts(monkeypatch, caplog):
+    """Test that server startup is logged."""
+    monkeypatch.setenv("BUSINESSMAP_SUBDOMAIN", "test-subdomain")
+    monkeypatch.setenv("BUSINESSMAP_API_KEY", "test-api-key")
+    monkeypatch.setattr(businessmap_mcp_server.mcp, "run", lambda: None)
+
+    with caplog.at_level("INFO"):
+        businessmap_mcp_server.main()
+
+    assert "Starting BusinessMap MCP server" in caplog.text
 
 def test_get_workspaces(client):
     """Test the get_workspaces method"""
@@ -74,15 +89,13 @@ def test_search_cards(client):
     matching_cards = client.search_cards("test", board_id=3, limit=5)
     assert isinstance(matching_cards, list)
 
-@pytest.mark.skip(reason="We don't want to create cards in the test suite")
 def test_create_card(client):
     """Test the create_card method"""
 
     # Test creating a feature card
     new_card = client.create_card(
         board_id=3,  # Development board
-        title="Test Feature Card - Pytest",
-        template=CardTemplate.FEATURE,
+        title="Test MCP create card",
         description="This is a test feature description",
         lane_id=12
     )
@@ -92,4 +105,4 @@ def test_create_card(client):
     
     # Verify the card was created by fetching its details
     card_details = client.get_card(new_card['card_id'])
-    assert card_details.get('title') == "Test Feature Card - Pytest"
+    assert card_details.get('title') == "Test MCP create card"
